@@ -1,0 +1,5 @@
+{
+  "_type": "prompt",
+  "input_variables": ["name" ,"age" ],
+  "template": "Hello, my name is {name} and I am {age} years old."
+}
