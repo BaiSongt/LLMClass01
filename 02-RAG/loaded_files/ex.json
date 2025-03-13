@@ -1,0 +1,27 @@
+{
+  "name": "示例 JSON 文件",
+  "description": "这是一个示例的 JSON 文件，展示了各种 JSON 语法的使用。",
+  "version": 1.0,
+  "items": [
+    {
+      "id": 1,
+      "name": "项目 1",
+      "details": {
+        "description": "这是项目 1 的描述",
+        "value": 100
+      }
+    },
+    {
+      "id": 2,
+      "name": "项目 2",
+      "details": {
+        "description": "这是项目 2 的描述",
+        "value": 200
+      }
+    }
+  ],
+  "settings": {
+    "enabled": true,
+    "threshold": 0.75
+  }
+}
