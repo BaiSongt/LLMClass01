@@ -215,3 +215,168 @@ print(response)
 5. **TextPromptChain**：通过模板实现结构化交互。
 
 建议结合具体需求选择链类型，并参考[LangChain官方网页](https://python.langchain.com/docs/)深入学习高级用法。
+
+______
+
+## **RouterChain**
+
+`RouterChain` 是 LangChain 中用于**动态路由请求**的高级链式结构，根据输入内容或上下文自动选择匹配的子链（Sub-chain）进行处理。它通过路由规则（如关键词匹配、意图识别、模态判断等）实现灵活的任务分发，适用于多模态、多步骤或复杂对话场景。
+
+---
+
+### **核心功能**
+1. **动态路由**：根据输入内容（文本、图片、文件等）或上下文自动选择对应的子链。
+2. **多模态支持**：可结合文本、图像、表格等多种数据类型进行路由决策。
+3. **灵活配置**：支持基于规则（Rule-Based）、基于意图（Intent-Based）或混合路由策略。
+
+---
+
+### **关键参数**
+1. **`router`**：路由器配置，定义匹配规则和对应的子链。
+   - 例如：`{"text": text_chain, "image": image_chain}`。
+2. **`interpreter`**（可选）：解释器（如 `TextInterpreter`），用于解析输入内容并提取路由关键信息。
+3. **`input_variables`**：输入变量名称，需与子链的输入匹配。
+
+---
+
+### **使用场景**
+1. **多模态任务**：根据输入类型（文本/图片/文件）自动路由到不同处理链。
+   ```python
+   # 用户上传图片或文本时，路由到对应处理链
+   ```
+2. **复杂对话系统**：根据用户意图（如“解释”、“生成”、“分析”）分配不同对话流程。
+3. **动态任务分配**：根据问题复杂度、领域自动选择专家级子链。
+4. **A/B测试路由**：按特定条件将请求分发到不同模型或服务。
+
+---
+
+### **代码示例**
+#### 场景1：多模态路由（文本/图片）
+```python
+from langchain import OpenAI, LLMChain
+from langchain.chains.router import RouterChain
+from langchain.prompts import PromptTemplate
+from langchain.interpreters import TextInterpreter
+
+# 定义子链：文本处理链和图像处理链
+text_chain = LLMChain(
+    llm=OpenAI(temperature=0.5),
+    prompt=PromptTemplate(
+        template="分析以下文本内容：{text}",
+        input_variables=["text"]
+    )
+)
+
+image_chain = LLMChain(
+    llm=OpenAI(temperature=0.5),
+    prompt=PromptTemplate(
+        template="描述以下图片内容：{image}",
+        input_variables=["image"]
+    )
+)
+
+# 定义路由规则（关键词匹配）
+router_config = {
+    "text": {"chain": text_chain, "interpreter": TextInterpreter()},
+    "image": {"chain": image_chain}
+}
+
+# 创建 RouterChain
+router_chain = RouterChain(
+    router=router_config,
+    interpreter=TextInterpreter()  # 解析输入类型（文本/图片）
+)
+
+# 调用链（自动路由）
+response = router_chain.invoke({
+    "input": "这是一张猫的图片.jpg",  # 实际使用需解析文件类型
+    "type": "image"  # 或通过 interpreter 自动识别
+})
+
+print(response)
+```
+
+#### 场景2：意图路由（问答/生成/分析）
+```python
+from langchain.chains.router import IntentRouter
+
+# 定义意图映射
+intent_router = IntentRouter(
+    {
+        "question": {
+            "chain": LLMChain(
+                llm=OpenAI(),
+                prompt=PromptTemplate("回答以下问题：{question}")
+            )
+        },
+        "generate": {
+            "chain": LLMChain(
+                llm=OpenAI(),
+                prompt=PromptTemplate("生成一段关于{topic}的文案：{topic}")
+            )
+        },
+        "analyze": {
+            "chain": LLMChain(
+                llm=OpenAI(),
+                prompt=PromptTemplate("分析以下数据：{data}")
+            )
+        }
+    },
+    intent_classifier=LLMChain(llm=OpenAI())  # 使用LLM判断意图
+)
+
+# 调用链（自动识别意图）
+response = intent_router.invoke({
+    "input": "帮我写一篇关于环保的演讲稿"
+})
+
+print(response)  # 自动路由到 "generate" 链
+```
+
+---
+
+### **RouterChain vs 其他链**
+| **特性**          | **RouterChain**                     | **ConditionalChain**         |
+|---------------------|---------------------------------------|--------------------------------|
+| **路由逻辑**        | 动态匹配（规则/意图/模态）            | 静态条件分支（预定义条件）     |
+| **灵活性**          | 支持复杂路由策略（如正则表达式）       | 仅支持简单的键值对条件         |
+| **适用场景**        | 多模态、意图识别、动态任务分配         | 简单的多步骤流程控制           |
+| **性能开销**        | 较高（需解析输入并匹配规则）           | 较低（直接按条件分支执行）     |
+
+---
+
+### **常见错误与注意事项**
+1. **路由规则冲突**：确保不同路由规则的匹配条件互斥。
+   ```python
+   # 错误示例：同时匹配 "cat" 和 "animal"
+   {"text": ..., "cat": ...}  # 优先级问题可能导致覆盖
+   ```
+2. **输入解析依赖**：使用 `interpreter` 时需确保输入格式标准化。
+3. **子链兼容性**：所有子链的输入变量需与 `input_variables` 一致。
+
+---
+
+### **进阶用法**
+- **混合路由策略**：结合关键词匹配和意图识别。
+  ```python
+  router_config = {
+      "rule1": {"pattern": r"分析(.*)", "chain": analysis_chain},
+      "intent": {"intent": "generate", "chain": generate_chain}
+  }
+  ```
+- **默认路由**：为未匹配的请求设置默认处理链。
+  ```python
+  router_config = {
+      "default": {"chain": default_chain}
+  }
+  ```
+
+---
+
+### **总结**
+`RouterChain` 是 LangChain 中实现**智能化任务分发**的核心组件，通过动态路由机制显著提升复杂系统的扩展性和灵活性。适用于需要：
+- 多模态输入处理的场景（如 ChatGPT+DALL-E 集成）。
+- 根据用户意图或上下文动态调整响应的对话系统。
+- 分布式任务队列或 A/B 测试架构。
+
+建议结合具体业务需求设计路由规则，并通过单元测试验证覆盖所有可能的输入路径。
