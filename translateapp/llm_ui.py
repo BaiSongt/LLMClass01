@@ -17,15 +17,15 @@ from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
     QPalette, QPixmap, QRadialGradient, QTransform)
 from PySide6.QtWidgets import (QApplication, QComboBox, QHBoxLayout, QLabel,
     QPlainTextEdit, QPushButton, QSizePolicy, QSpacerItem,
-    QTextEdit, QVBoxLayout, QWidget)
+    QTextBrowser, QTextEdit, QVBoxLayout, QWidget)
 
 class Ui_Form(object):
     def setupUi(self, Form):
         if not Form.objectName():
             Form.setObjectName(u"Form")
-        Form.resize(683, 520)
-        self.verticalLayout_2 = QVBoxLayout(Form)
-        self.verticalLayout_2.setObjectName(u"verticalLayout_2")
+        Form.resize(754, 660)
+        self.verticalLayout_3 = QVBoxLayout(Form)
+        self.verticalLayout_3.setObjectName(u"verticalLayout_3")
         self.horizontalLayout_2 = QHBoxLayout()
         self.horizontalLayout_2.setObjectName(u"horizontalLayout_2")
         self.llm_lable_select = QLabel(Form)
@@ -50,12 +50,18 @@ class Ui_Form(object):
         self.horizontalLayout_2.addItem(self.horizontalSpacer)
 
 
-        self.verticalLayout_2.addLayout(self.horizontalLayout_2)
+        self.verticalLayout_3.addLayout(self.horizontalLayout_2)
+
+        self.textBrowser = QTextBrowser(Form)
+        self.textBrowser.setObjectName(u"textBrowser")
+
+        self.verticalLayout_3.addWidget(self.textBrowser)
 
         self.horizontalLayout_3 = QHBoxLayout()
         self.horizontalLayout_3.setObjectName(u"horizontalLayout_3")
         self.llm_msg_output = QTextEdit(Form)
         self.llm_msg_output.setObjectName(u"llm_msg_output")
+        self.llm_msg_output.setMinimumSize(QSize(0, 400))
         self.llm_msg_output.setReadOnly(True)
 
         self.horizontalLayout_3.addWidget(self.llm_msg_output)
@@ -76,22 +82,35 @@ class Ui_Form(object):
         self.horizontalLayout_3.addLayout(self.verticalLayout)
 
 
-        self.verticalLayout_2.addLayout(self.horizontalLayout_3)
+        self.verticalLayout_3.addLayout(self.horizontalLayout_3)
 
         self.horizontalLayout = QHBoxLayout()
         self.horizontalLayout.setObjectName(u"horizontalLayout")
         self.user_input_edit = QPlainTextEdit(Form)
         self.user_input_edit.setObjectName(u"user_input_edit")
+        self.user_input_edit.setMaximumSize(QSize(16777215, 400))
 
         self.horizontalLayout.addWidget(self.user_input_edit)
 
+        self.verticalLayout_2 = QVBoxLayout()
+        self.verticalLayout_2.setObjectName(u"verticalLayout_2")
+        self.clear_btn_2 = QPushButton(Form)
+        self.clear_btn_2.setObjectName(u"clear_btn_2")
+        self.clear_btn_2.setMinimumSize(QSize(0, 20))
+
+        self.verticalLayout_2.addWidget(self.clear_btn_2)
+
         self.enter_btn = QPushButton(Form)
         self.enter_btn.setObjectName(u"enter_btn")
+        self.enter_btn.setMinimumSize(QSize(0, 20))
 
-        self.horizontalLayout.addWidget(self.enter_btn)
+        self.verticalLayout_2.addWidget(self.enter_btn)
 
 
-        self.verticalLayout_2.addLayout(self.horizontalLayout)
+        self.horizontalLayout.addLayout(self.verticalLayout_2)
+
+
+        self.verticalLayout_3.addLayout(self.horizontalLayout)
 
 
         self.retranslateUi(Form)
@@ -105,6 +124,7 @@ class Ui_Form(object):
         self.copy_btn.setText(QCoreApplication.translate("Form", u"copy", None))
         self.clear_btn.setText(QCoreApplication.translate("Form", u"clear", None))
         self.user_input_edit.setPlainText("")
-        self.enter_btn.setText(QCoreApplication.translate("Form", u"Enter", None))
+        self.clear_btn_2.setText(QCoreApplication.translate("Form", u"clear", None))
+        self.enter_btn.setText(QCoreApplication.translate("Form", u" Ask ", None))
     # retranslateUi
 

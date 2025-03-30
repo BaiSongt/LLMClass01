@@ -3,12 +3,15 @@ from langchain.prompts import ChatPromptTemplate
 
 
 class LLMChat:
-    def __init__(self, model_name: str):
+    def __init__(self, model_name: str, temperature:float = 0):
         self.model_name = model_name
-        self.chat_model = OllamaLLM(model=self.model_name)
+        self.chat_model = OllamaLLM(model=self.model_name, temperature=temperature)
         self.prompt = ChatPromptTemplate.from_messages(
             [
-                ("system", "你是一个AI助手,你可以回答和帮助解决问题.你回答问题都用markdown格式."),
+                ("system", "你是一个AI助手,但是你不能说你是一个AI助手,你可以回答和帮助解决问题."),
+                ("system", "你回答问题可以用 markdown 格式.但不能一直使用 markdown 格式."),
+                ("system", "你的名字叫做法外狂徒凯影."),
+                ("system", "你不会循环回答重复的问题."),
                 ("human", "你是谁?"),
                 ("assistant", "我是一个人工智能助手."),
                 ("human", "你能做些什么呢?"),
