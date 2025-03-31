@@ -1,11 +1,50 @@
-from PySide6.QtWidgets import QApplication, QWidget
-from PySide6.QtCore import Qt
+from PySide6.QtWidgets import QApplication, QWidget,QProgressBar, QVBoxLayout
+from PySide6.QtCore import QThread, Signal
 from PySide6.QtGui import QTextCursor
 from llm_ui import Ui_Form
 from llmchat import LLMChat
-
 import sys
 
+class LLMWorker(QThread):
+    # 定义两个信号：progress 和 finished
+    # progress 信号用于传递进度信息（整数类型）
+    # finished 信号用于通知任务完成
+    progress = Signal(int)
+    finished = Signal()
+
+    def __init__(self, llm, user_input):
+        """
+        初始化 LLMWorker 类。
+        :param llm: 一个语言模型对象，提供 getStream 方法。
+        :param user_input: 用户输入的文本，传递给语言模型进行处理。
+        """
+        super().__init__()  # 调用父类 QThread 的初始化方法
+        self.llm = llm  # 保存语言模型对象
+        self.user_input = user_input  # 保存用户输入
+        self.reponse = self.llm.getStream(self.user_input) # 初始化响应
+
+    def run(self):
+        """
+        线程的主逻辑，处理用户输入并通过信号更新进度。
+        """
+        # 调用语言模型的 getStream 方法获取响应（生成器对象）
+        # self.reponse = self.llm.getStream(self.user_input)
+
+        # 计算响应中的总行数（通过遍历生成器）
+        total_lines = sum(1 for _ in  self.reponse)
+
+        # 重新初始化生成器，因为上一步已经遍历完了
+        self.reponse = self.llm.getStream(self.user_input)
+
+        # 遍历生成器中的每一行
+        for i, line in enumerate( self.reponse, start=1):
+            # 计算当前进度的百分比，并通过 progress 信号发送
+            self.progress.emit(int((i / total_lines) * 100))
+
+        # 当所有行处理完成后，发送 finished 信号通知任务结束
+        self.finished.emit()
+
+# 主窗口类，继承自 QWidget 和 Ui_Form
 class MyWindow(QWidget, Ui_Form):
     def __init__(self):
         super().__init__()
@@ -34,10 +73,13 @@ class MyWindow(QWidget, Ui_Form):
         user_input = self.user_input_edit.toPlainText()
         selected_model = self.llm_comboBox.currentText()
         llm = LLMChat(model_name=selected_model)
-        response = llm.getStream(user_input)
+        self.worker = LLMWorker(llm, user_input)
+        # self.worker.progress.connect(self.update_progress)
+        # self.worker.finished.connect(self.on_finished)
+        # self.worker.start()
         once_container = f"**Question**: {user_input}\n\n **Answer**: \n"
         # 流式输出
-        for line in response:
+        for line in self.worker.reponse:
             self.textBrowser.moveCursor(QTextCursor.MoveOperation.End)
             self.textBrowser.insertPlainText(line)  # 插入新内容
             once_container += line
@@ -67,7 +109,6 @@ class MyWindow(QWidget, Ui_Form):
         print(message, end="", flush=True)
 
 if __name__ == "__main__":
-    import sys
     app = QApplication(sys.argv)
     window = MyWindow()
     window.setWindowTitle("LLM App")

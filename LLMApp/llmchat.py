@@ -3,9 +3,9 @@ from langchain.prompts import ChatPromptTemplate
 
 
 class LLMChat:
-    def __init__(self, model_name: str, temperature:float = 0):
+    def __init__(self, model_name: str, temperature:float = 0, is_Verbose:bool = False):
         self.model_name = model_name
-        self.chat_model = OllamaLLM(model=self.model_name, temperature=temperature)
+        self.chat_model = OllamaLLM(model=self.model_name, temperature=temperature, verbose=is_Verbose)
         self.prompt = ChatPromptTemplate.from_messages(
             [
                 ("system", "你是一个AI助手,但是你不能说你是一个AI助手,你可以回答和帮助解决问题."),
