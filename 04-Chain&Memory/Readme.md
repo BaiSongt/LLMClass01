@@ -1,3 +1,51 @@
+LangChain 提供了多种预制链（Chains）以简化复杂工作流的构建，以下是常用的预制链类型及其应用场景：
+
+### 一、通用预制链
+1. **LLMChain**
+   基础链类型，封装了提示模板与语言模型的交互，用于单次模型调用。例如通过 `LLMChain(llm=ChatOpenAI(), prompt=prompt_template)` 实现模型调用。
+
+2. **SequentialChain**
+   顺序执行多个子链，支持跨链数据传递。适用于分步骤处理任务，如先解析关键词再检索答案。
+
+3. **RetrievalQAChain**
+   结合检索与问答功能，先通过向量检索获取相关网页片段，再调用模型生成答案。适用于网页问答场景。
+
+4. **ToolChain**
+   调用外部工具的链，例如集成搜索引擎或计算器工具。通过 `ToolChain(tools=[Tool(name="Search", func=google_search)])` 实现。
+
+5. **TransformChain**
+   插入自定义Python函数处理数据，例如过滤噪音或格式转换，增强链的灵活性。
+
+6. **RouterChain**
+   根据输入动态选择后续链，适用于需差异化处理不同问题的场景（如多模型选择）。
+
+---
+
+### 二、网页处理专用链（Text Processing Chains）
+1. **TextSplitterChain**
+   将长网页分割为小片段，便于后续处理。
+
+2. **DocumentLoaderChain**
+   从文件、数据库等来源加载网页内容。
+
+3. **EmbeddingChain**
+   将网页转换为向量表示，用于相似性检索。
+
+4. **SummarizationChain**
+   从网页中提取摘要，支持自动化内容精简。
+
+---
+
+### 三、对话增强链
+**ConversationalRetrievalChain**
+结合聊天记忆与检索功能，适用于对话式问答。例如通过 `ConversationalRetrievalChain` 实现上下文感知的检索。
+
+---
+
+这些预制链通过模块化设计降低了开发复杂度，开发者可灵活组合以实现聊天机器人、网页分析、智能体等应用。具体实现时需注意不同链的输入输出变量配置及依赖项安装。
+
+
+
 以下是LangChain中几种基础Chain的详细介绍，结合源代码、参数、使用场景及代码示例：
 
 ---
