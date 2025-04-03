@@ -1,7 +1,7 @@
 import requests,os
 from dotenv import load_dotenv
 from langchain.agents import initialize_agent, Tool, AgentType
-from langchain_ollama.chat_models import ChatOllama
+# from langchain_ollama.chat_models import ChatOllama
 from langchain.tools import tool
 
 # OPENAI_API_KEY = "YOUR-OPENAI-API-KEY"
@@ -10,7 +10,7 @@ BOCHA_API_KEY = os.getenv("BOCHA_API_KEY")
 
 # 定义Bocha Web Search工具
 @tool
-def bocha_websearch_tool(query: str, count: int = 10) -> str:
+def bocha_websearch_tool(query: str, count: int = 2) -> str:
     """
     使用Bocha Web Search API 进行网页搜索。
 
@@ -65,11 +65,11 @@ def bocha_websearch_tool(query: str, count: int = 10) -> str:
         return f"搜索API请求失败，状态码: {response.status_code}, 错误信息: {response.text}"
 
 # 创建LangChain工具
-bocha_tool = Tool(
-    name="BochaWebSearch",
-    func=bocha_websearch_tool,
-    description="使用Bocha Web Search API 进行搜索互联网网页，输入应为搜索查询字符串，输出将返回搜索结果的详细信息，包括网页标题、网页URL、网页摘要、网站名称、网站Icon、网页发布时间等。"
-)
+# bocha_tool = Tool(
+#     name="BochaWebSearch",
+#     func=bocha_websearch_tool,
+#     description="使用Bocha Web Search API 进行搜索互联网网页，输入应为搜索查询字符串，输出将返回搜索结果的详细信息，包括网页标题、网页URL、网页摘要、网站名称、网站Icon、网页发布时间等。"
+# )
 
 # 初始化OpenAI语言模型
 # llm = ChatOpenAI(
@@ -77,17 +77,17 @@ bocha_tool = Tool(
 #     temperature=0,
 #     openai_api_key=OPENAI_API_KEY
 # )
-llm = ChatOllama(model="qwen2.5:latest",temperature=0)
+# llm = ChatOllama(model="qwen2.5:latest",temperature=0)
 
 # 初始化代理，包含您的自定义工具
-agent = initialize_agent(
-    tools=[bocha_tool],
-    llm=llm,
-    agent=AgentType.STRUCTURED_CHAT_ZERO_SHOT_REACT_DESCRIPTION,
-    verbose=True
-)
+# agent = initialize_agent(
+#     tools=[bocha_tool],
+#     llm=llm,
+#     agent=AgentType.STRUCTURED_CHAT_ZERO_SHOT_REACT_DESCRIPTION,
+#     verbose=True
+# )
 
 # 使用代理进行查询
-user_question = "成都现在的天气如何"
-response = agent.invoke(user_question)
-print(response)
+# user_question = "成都现在的天气如何"
+# response = agent.invoke(user_question)
+# print(response)
