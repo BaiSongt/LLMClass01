@@ -16,10 +16,10 @@ from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
     QImage, QKeySequence, QLinearGradient, QPainter,
     QPalette, QPixmap, QRadialGradient, QTransform)
 from PySide6.QtWidgets import (QApplication, QCheckBox, QComboBox, QGridLayout,
-    QHBoxLayout, QLabel, QLineEdit, QListView,
-    QPlainTextEdit, QProgressBar, QPushButton, QSizePolicy,
-    QSpacerItem, QSplitter, QTextBrowser, QTextEdit,
-    QVBoxLayout, QWidget)
+    QHBoxLayout, QLabel, QLineEdit, QListWidget,
+    QListWidgetItem, QPlainTextEdit, QProgressBar, QPushButton,
+    QSizePolicy, QSpacerItem, QSplitter, QTextBrowser,
+    QTextEdit, QVBoxLayout, QWidget)
 
 class Ui_Form(object):
     def setupUi(self, Form):
@@ -80,11 +80,11 @@ class Ui_Form(object):
         self.horizontalLayout_2.setObjectName(u"horizontalLayout_2")
         self.horizontalLayout = QHBoxLayout()
         self.horizontalLayout.setObjectName(u"horizontalLayout")
-        self.listView_files = QListView(Form)
-        self.listView_files.setObjectName(u"listView_files")
-        self.listView_files.setMaximumSize(QSize(16777215, 60))
+        self.listWidget_files = QListWidget(Form)
+        self.listWidget_files.setObjectName(u"listWidget_files")
+        self.listWidget_files.setMaximumSize(QSize(16777215, 60))
 
-        self.horizontalLayout.addWidget(self.listView_files)
+        self.horizontalLayout.addWidget(self.listWidget_files)
 
         self.verticalLayout_3 = QVBoxLayout()
         self.verticalLayout_3.setObjectName(u"verticalLayout_3")
