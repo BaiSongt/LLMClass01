@@ -10,7 +10,7 @@ BOCHA_API_KEY = os.getenv("BOCHA_API_KEY")
 
 # 定义Bocha Web Search工具
 @tool
-def bocha_websearch_tool(query: str, count: int = 2) -> str:
+def bocha_websearch_tool(query: str, count: int = 5) -> str:
     """
     使用Bocha Web Search API 进行网页搜索。
 
