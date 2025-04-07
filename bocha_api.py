@@ -1,4 +1,4 @@
-import requests,os
+import requests,os,sys
 from dotenv import load_dotenv
 from langchain.agents import initialize_agent, Tool, AgentType
 # from langchain_ollama.chat_models import ChatOllama
@@ -7,6 +7,9 @@ from langchain.tools import tool
 # OPENAI_API_KEY = "YOUR-OPENAI-API-KEY"
 load_dotenv()
 BOCHA_API_KEY = os.getenv("BOCHA_API_KEY")
+
+# Add the root directory to the Python path
+sys.path.append(os.path.abspath(os.path.join(os.getcwd(), "..")))
 
 # 定义Bocha Web Search工具
 @tool
