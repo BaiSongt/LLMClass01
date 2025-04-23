@@ -1,6 +1,6 @@
 from langchain_ollama.llms import OllamaLLM
 from langchain.prompts import ChatPromptTemplate, PromptTemplate
-from langchain.memory import ConversationBufferMemory
+from langchain.chains.conversation.memory import ConversationBufferMemory
 from langchain.agents import initialize_agent, AgentType, Tool, tool, AgentExecutor
 
 # 导入Websearch
@@ -55,36 +55,38 @@ class LLMChat:
         )
         return search_tool
 
-
-    def chat_memory_agent(self, llm: OllamaLLM, verbose:bool):
+    def chat_memory_agent(self, llm: OllamaLLM, verbose: bool) -> AgentExecutor:
         template = """{chat_history}
-                   human:{input}
-                   assistant:"""
+                    human:{input}
+                    assistant:"""
 
         prompt = PromptTemplate(
-          template=template,
-          input_variables=["chat_history", "input"],
+            template=template,
+            input_variables=["chat_history", "input"]
         )
 
         memory = ConversationBufferMemory(
             memory_key="chat_history",
             ai_prefix="assistant",
-            return_messages=True,
+            return_messages=True
         )
 
-        agent_chain = initialize_agent(
-            tools=[self.web_search_tool()],
+        tools = [self.web_search_tool()]
+
+        agent = initialize_agent(
+            tools=tools,
             llm=llm,
             agent=AgentType.CHAT_ZERO_SHOT_REACT_DESCRIPTION,
-            memory=memory,
-            verbose=verbose
+            verbose=verbose,
+            memory=memory
         )
 
-        # 创建Agent并启用流式响应
-        agent = AgentExecutor.from_agent_and_tools(
-            tools=[self.web_search_tool()],
-            agent=agent_chain,
-            llm=llm
+        # 显式启用错误处理
+        agent_executor = AgentExecutor.from_agent(
+            agent=agent,
+            tools=tools,
+            verbose=verbose,
+            handle_parsing_errors=True  # 关键修复
         )
 
-        return agent
+        return agent_executor
